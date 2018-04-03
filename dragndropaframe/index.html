@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Sailing Sequence</title>
+        <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+        <script src="https://rawgit.com/takahirox/aframe-rain/master/build/aframe-rain.min.js"></script>
+        <script src="https://unpkg.com/aframe-environment-component@1.0.0/dist/aframe-environment-component.min.js"></script>
+        <script src="https://unpkg.com/aframe-event-set-component@4.0.1/dist/aframe-event-set-component.js"></script>
+        <script src="https://unpkg.com/aframe-aabb-collider-component/dist/aframe-aabb-collider-component.min.js"></script>
+        <script>
+            var first_time = 7   //Number of rocks plus 1
+            AFRAME.registerComponent('collision_detect', {
+                init: function () {
+                    this.el.addEventListener('hitstart', function (evt) {
+                        // Hotfix for some initialization bug
+                        if(first_time){
+                            first_time = first_time - 1
+                        } else {
+                            console.log('collision occured');
+                            var you_died = document.getElementById('you_died');
+                            you_died.emit('activate')
+                        }
+                    });
+                }
+            });
+            
+            AFRAME.registerComponent('position-interval', {
+              tick: function (t) {
+                var entity = this.el;
+
+                // Run on an interval.
+                if (t - this.time < 10) { return; } 
+                this.time = t;
+
+                // Calculate a position.
+                var position = new THREE.Vector3().copy(entity.object3D.getWorldPosition());
+                console.log(position);
+                // Update position.
+                position.z -= 0.5;
+                entity.setAttribute('position', position);
+              }
+            });
+            
+        </script>
+    </head>
+
+    <body>
+        <a-scene>
+            <!-- Asset Management System -->
+            <a-assets>
+                <img id="floor" src="img/floor.png">
+                <img id="floor-NRM" src="img/floor-NRM.png">
+                <img id="clear-sunny-sky" src="img/clear-sunny-sky.jpg">
+
+                <a-asset-item id="ship-o" src="3d/ship/model.obj"></a-asset-item>
+                <a-asset-item id="ship-m" src="3d/ship/materials.mtl"></a-asset-item>
+                <a-asset-item id="island1-o" src="3d/island1/Tropical%20Islands.obj"></a-asset-item>
+                <a-asset-item id="island1-m" src="3d/island1/Tropical%20Islands.mtl"></a-asset-item>
+                <a-asset-item id="island2-o" src="3d/island2/Bay_1250.obj"></a-asset-item>
+                <a-asset-item id="island2-m" src="3d/island2/Bay_1250.mtl"></a-asset-item>
+                <a-asset-item id="rock1-o" src="3d/rock1/PUSHILIN_stone.obj"></a-asset-item>
+                <a-asset-item id="rock1-m" src="3d/rock1/PUSHILIN_stone.mtl"></a-asset-item>
+            </a-assets>
+
+            <!-- Rocks-->
+            <a-entity position="-50 0 0">
+                <!-- Rock-->
+                <a-entity position="0 0 -150" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="100 0 -250" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="-100 0 -250" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="0 0 -350" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="100 0 -450" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="-100 0 -450" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+
+                <!-- Rock-->
+                <a-entity position="50 0 -500" obj-model="obj: #rock1-o; mtl: #rock1-m" scale="30 30 30">
+                    <!-- Rock Collision Box --> <a-box aabb-collider="objects: a-box; debug: true" opacity="0" collision_detect></a-box> 
+                </a-entity>
+            </a-entity>    
+
+            <!-- America -->
+            <a-entity id="america" position="0 0 -1000" scale="1 1 1" rotation="0 0 0">
+                <a-entity obj-model="obj: #island2-o; mtl: #island2-m" position="-50 0 0" scale="1 1 1" rotation="0 0 0"></a-entity> <!-- Island1 -->
+                <a-entity obj-model="obj: #island2-o; mtl: #island2-m" position="0 0 0" scale="1 1 1" rotation="0 180 0"></a-entity> <!-- Island2 -->
+                <a-entity obj-model="obj: #island2-o; mtl: #island2-m" position="70 0 0" scale="1 1 1" rotation="0 0 0"></a-entity> <!-- Island3 -->
+
+                <!-- Light column -->
+                <a-cylinder color="blue" scale="10 10000 10" opacity="0.2"></a-cylinder>
+
+                <!-- Welcome message -->
+                <a-entity id="welcome_message"
+                          text="value: Welcome to America!;
+                                color: #000000; width: 200;
+                                align: center"
+                          position="0 50 11">
+                </a-entity>
+
+            </a-entity>
+
+            <!-- Retry Box -->
+            <a-entity id="retry_set"
+                      position="0 10.1 -1001"
+                      scale=".1 .1 .1">
+
+                <a-entity text="value: Retry?;
+                                color: #666666;
+                                width: 10;
+                                align: center">
+                </a-entity>
+
+                <a-box id="retry"
+                       class="clickable"
+                       position="0 -1 0"
+                       color = "#666666"
+                       retry>
+                </a-box>
+
+            </a-entity>
+
+            <!-- Sky -->
+            <a-sky src="#clear-sunny-sky"
+                   rotation="0 65 0">
+            </a-sky>
+
+
+            <!-- User + Ship -->
+            <a-entity id="user_ship" wasd-controls="enabled: true; acceleration: 5000" position="0 0 0" rain="opacity: 0.7; count: 10000; color: #fefefa;" position-interval>
+
+                <!-- User -->
+                <a-entity id="user"
+                          position="0 8 0"
+                          rotation="0 0 0">
+                    <a-camera id="camera" keyboard-controls="enabled: false" wasd-controls="enabled: false">
+                        <a-entity cursor="fuse:true" position="0 0 -1" geometry="primitive:sphere;radius:0.03" material="opacity:0.5;shader:flat;color:#ffffff">
+                        </a-entity>
+                        <a-entity cursor="fuse: true; fuseTimeout: 1500"
+                                  position="0 0 -1"
+                                  geometry="primitive: sphere; radius: 0.01"
+                                  material="color: #ffffff; shader: flat; opacity: 0.5"
+                                  raycaster="objects: .clickable">
+                            <a-animation attribute="scale"
+                                         to="3 3 3"
+                                         dur="1500"
+                                         begin="cursor-fusing"
+                                         fill="backwards"
+                                         easing="linear">
+                            </a-animation>
+                        </a-entity>
+                    </a-camera>
+                </a-entity>
+                
+                <!-- Steering Boxes -->
+                <a-box position="1 10 -3" color="#00a9d4"
+                       event-set__leftturn="_event: mouseenter;"
+                       event-set__reset="_event: mouseleave; _target: #user_ship; rotation: 0 0 0"></a-box>
+                <a-box position="-1 10 -3" color="#00a9d4"
+                       event-set__rightturn="_event: mouseenter; _target: #user_ship; rotation: 0 -45 0"
+                       event-set__reset="_event: mouseleave; _target: #user_ship; rotation: 0 0 0"></a-box>
+                <!-- Ship -->
+                <a-entity obj-model="obj: #ship-o; mtl: #ship-m"
+                          position="-2 11 10"
+                          rotation="0 140 0"
+                          scale="30 30 30">
+                </a-entity>      
+                
+
+                <!-- Blackout -->
+                <a-sphere id="blackout"
+                          color="#000000"
+                          position="0 -100 0"
+                          scale=".5 .5 .5"
+                          opacity="0"
+                          side="double">
+                    <a-animation attribute="opacity"
+                                 from="0"
+                                 to="1"
+                                 direction="alternate"
+                                 repeat="1"
+                                 dur="2000"
+                                 easing="linear"
+                                 begin="activate">
+                    </a-animation> 
+                </a-sphere>  
+
+            </a-entity>
+
+
+            <!-- Sea -->
+            <a-plane id="sea"
+                     material="color: #FFFFFF;
+                               src: #floor;
+                               repeat: 100 100;
+                               normal-map: #floor-NRM;
+                               normal-texture-repeat: 100 100";
+                     rotation="-90 -135 0"
+                     position="0 2.62 0"
+                     scale="5000 5000 1">
+            </a-plane>
+
+
+
+        </a-scene>
+
+    </body>
+</html>
